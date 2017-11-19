@@ -14,7 +14,8 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
     @FXML
-    public Button button1;
+    public Button calculateButton;
+    public Button graphButton;
     public TextArea textlength;
     public TextArea textnodes;
     public TextArea textcond;
@@ -25,6 +26,7 @@ public class Controller implements Initializable {
     public ChoiceBox choice0;
     public ChoiceBox choicel;
     public TableView resultsTable;
+    public Label warningLabel;
     TableColumn nodeCol = new TableColumn("Node");
     TableColumn xCol = new TableColumn("x");
     TableColumn wCol = new TableColumn("w");
@@ -40,22 +42,31 @@ public class Controller implements Initializable {
         choicel.setItems(FXCollections.observableArrayList("hl", "ql"));
         choicel.getSelectionModel().selectFirst();
         //Formatting table columns
-        nodeCol.setStyle( "-fx-alignment: CENTER;");
-        xCol.setStyle( "-fx-alignment: CENTER;");
-        wCol.setStyle( "-fx-alignment: CENTER;");
-        hCol.setStyle( "-fx-alignment: CENTER;");
-        qCol.setStyle( "-fx-alignment: CENTER;");
+        nodeCol.setStyle("-fx-alignment: CENTER;");
+        xCol.setStyle("-fx-alignment: CENTER;");
+        wCol.setStyle("-fx-alignment: CENTER;");
+        hCol.setStyle("-fx-alignment: CENTER;");
+        qCol.setStyle("-fx-alignment: CENTER;");
         nodeCol.setPrefWidth(40);
+
         //Adding columns to the TableView
         resultsTable.getColumns().addAll(nodeCol, xCol, wCol, hCol, qCol);
-        System.out.println(nodeCol.getWidth());
-        System.out.println(xCol.getWidth());
-        System.out.println(wCol.getWidth());
-        System.out.println(hCol.getWidth());
-        System.out.println(qCol.getWidth());
-        resultsTable.setMaxWidth(nodeCol.getWidth()+xCol.getWidth()+wCol.getWidth()+hCol.getWidth()+qCol.getWidth());
+        resultsTable.setMaxWidth(nodeCol.getWidth() + xCol.getWidth() + wCol.getWidth() + hCol.getWidth() + qCol.getWidth());
+
+
     }
 
+    public void choiceDetector(){
+        if (choice0.getValue().toString().equalsIgnoreCase("q0") && choicel.getValue().toString().equalsIgnoreCase("ql")) {
+            calculateButton.setDisable(true);
+            graphButton.setDisable(true);
+            warningLabel.setVisible(true);
+        } else {
+            calculateButton.setDisable(false);
+            graphButton.setDisable(false);
+            warningLabel.setVisible(false);
+        }
+    }
     //Called by clicking on "Calculate" Button
     public void calculate() {
 
@@ -108,7 +119,7 @@ public class Controller implements Initializable {
 
 
             //Receiving the nodeList from Equsolver
-            nodeList.addAll(Eqsolver.Solve(matrix.getMatrix(), matrix.getVectorLeft(), matrix.getVectorRight(), n, x, w0, wl,k));
+            nodeList.addAll(Eqsolver.Solve(matrix.getMatrix(), matrix.getVectorLeft(), matrix.getVectorRight(), n, x, w0, wl, k));
 
             //Mapping the values of Nodes to columns
             nodeCol.setCellValueFactory(new PropertyValueFactory<Node, String>("N"));
