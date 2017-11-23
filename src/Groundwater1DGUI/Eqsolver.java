@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Eqsolver {
 
-    public static List<Node> Solve(double[][] A, double[] left, double[] right, double n, double x, double w0, double wl, double k1) {
+    public static List<Node> Solve(double[][] A, double[] left, double[] right, double n, double x, double w0, double wl, double k1, int casenum) {
 
         int dimension = (int) n;
         List<Node> nodeList = new ArrayList<Node>();
@@ -107,18 +107,30 @@ public class Eqsolver {
         for (r = 0; r < dimension; r++) {
             System.out.print("h" + r + ": " + format1.format(left[r]) + "\t");
             nodeList.add(new Node());
-            nodeList.get(r).setN(r+1);
+            nodeList.get(r).setN(r + 1);
             nodeList.get(r).setH(Double.parseDouble(format1.format(left[r])));
             nodeList.get(r).setX(Double.parseDouble(format1.format(r * x)));
             nodeList.get(r).setW(Double.parseDouble(format1.format(w0 + wl * r * x)));
-            if (r != 0) {
-                nodeList.get(r).setQ(Double.parseDouble(format1.format((-k1 / x) * (left[r] - left[r - 1]))));
-            } else {
-                nodeList.get(r).setQ(Double.parseDouble(format1.format((-k1 / x) * left[r])));
+
+            //Setting q values on the list
+            if (r != 0 && r != dimension - 1) { //Middle Elements
+                nodeList.get(r).setQ(Double.parseDouble(format1.format((k1 / (2 * x*x)) * (left[r - 1] - 2 * left[r] + left[r + 1]))));
+            } else { //Node 0
+                if (r == 0) {
+                    if (casenum == 2) { //q0 is given
+                        nodeList.get(r).setQ(Double.parseDouble(format1.format(right[r])));
+                    } else { //h0 is given
+                        nodeList.get(r).setQ(Double.parseDouble(format1.format((k1 / x) * (left[r] - left[r + 1]))));
+                    }
+                } else { //Node n
+                    if (casenum == 3) { //qn is given
+                        nodeList.get(r).setQ(Double.parseDouble(format1.format(right[r])));
+                    } else { //hn is given
+                        nodeList.get(r).setQ(Double.parseDouble(format1.format((k1 / x) * (left[r - 2] - left[r - 1]))));
+                    }
+                }
             }
-
         }
-
         System.out.println("\n");
         return nodeList;
     }

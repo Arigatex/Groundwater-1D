@@ -77,7 +77,7 @@
             <Label layoutX="19.0" layoutY="78.0" text="Cond." />
             <Label layoutX="26.0" layoutY="175.0" text="W0" />
             <Label layoutX="146.0" layoutY="175.0" text="W1" />
-            <Button fx:id="graphButton" layoutX="88.0" layoutY="264.0" mnemonicParsing="false" text="Show Graph" />
+            <Button fx:id="graphButton" layoutX="88.0" layoutY="264.0" mnemonicParsing="false" onAction="#openGraph" text="Show Graph" textAlignment="CENTER" />
             <Label fx:id="warningLabel" layoutX="39.0" layoutY="289.0" prefHeight="75.0" prefWidth="183.0" text="System cannot be solved. &#10;Choose suitable boundary &#10;conditions." textAlignment="CENTER" visible="false">
                <font>
                   <Font name="System Bold" size="14.0" />
