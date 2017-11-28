@@ -126,7 +126,7 @@ public class Eqsolver {
                     if (casenum == 3) { //qn is given
                         nodeList.get(i).setQ(Double.parseDouble(format1.format(right[i])));
                     } else { //hn is given
-                        nodeList.get(i).setQ(Double.parseDouble(format1.format((-k / x) * (left[i - 1] - left[i - 2]))));
+                        nodeList.get(i).setQ(Double.parseDouble(format1.format((-k / x) * (left[i] - left[i-1]))));
                     }
                 }
             }
