@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Eqsolver {
 
-    public static List<Node> Solve(double[][] A, double[] left, double[] right, double n, double x, double w0, double wl, double k1, int casenum) {
+    public static List<Node> Solve(double[][] A, double[] left, double[] right, double n, double x, double w0, double wl, double k, int casenum) {
 
         int dimension = (int) n;
         List<Node> nodeList = new ArrayList<Node>();
@@ -15,48 +15,48 @@ public class Eqsolver {
         double[] vector = new double[dimension];
         int[] permutations = new int[dimension];
         int rmax = 0;
-        int r, c, k;
+        int i, c, ka;
 
 		/* max value in each row */
 
-        for (r = 0; r < dimension; r++) {
+        for (i = 0; i < dimension; i++) {
             double big = 0.0;
             for (c = 0; c < dimension; c++)
-                if (Math.abs(A[r][c]) > big)
-                    big = Math.abs(A[r][c]);
+                if (Math.abs(A[i][c]) > big)
+                    big = Math.abs(A[i][c]);
             if (big == 0.0)
                 System.out.println("Error: Matrix is singular!");
-            vector[r] = 1.0 / big;
+            vector[i] = 1.0 / big;
         }
 
 		/* LU decomposition of matrix with pivot element and permutation */
 
         for (c = 0; c < dimension; c++) {
-            for (r = 0; r < c; r++) {
-                double sum = A[r][c];
-                for (k = 0; k < r; k++)
-                    sum -= A[r][k] * A[k][c];
-                A[r][c] = sum;
+            for (i = 0; i < c; i++) {
+                double sum = A[i][c];
+                for (ka = 0; ka < i; ka++)
+                    sum -= A[i][ka] * A[ka][c];
+                A[i][c] = sum;
             }
             double big = 0.0;
-            for (r = c; r < dimension; r++) {
-                double sum = A[r][c];
-                for (k = 0; k < c; k++)
-                    sum -= A[r][k] * A[k][c];
-                A[r][c] = sum;
-                if (vector[r] * Math.abs(sum) >= big) {
-                    big = vector[r] * Math.abs(sum);
-                    rmax = r;
+            for (i = c; i < dimension; i++) {
+                double sum = A[i][c];
+                for (ka = 0; ka < c; ka++)
+                    sum -= A[i][ka] * A[ka][c];
+                A[i][c] = sum;
+                if (vector[i] * Math.abs(sum) >= big) {
+                    big = vector[i] * Math.abs(sum);
+                    rmax = i;
                 }
             }
 
 			/* permutation */
 
             if (c != rmax) {
-                for (k = 0; k < dimension; k++) {
-                    double dum = A[rmax][k];
-                    A[rmax][k] = A[c][k];
-                    A[c][k] = dum;
+                for (ka = 0; ka < dimension; ka++) {
+                    double dum = A[rmax][ka];
+                    A[rmax][ka] = A[c][ka];
+                    A[c][ka] = dum;
                 }
                 vector[rmax] = vector[c];
             }
@@ -66,37 +66,37 @@ public class Eqsolver {
 
             if (c != dimension) {
                 double dum = 1.0 / A[c][c];
-                for (r = c + 1; r < dimension; r++)
-                    A[r][c] *= dum;
+                for (i = c + 1; i < dimension; i++)
+                    A[i][c] *= dum;
             }
         }
 
 		/* copy righ vector to left vector */
 
-        for (r = 0; r < dimension; r++)
-            left[r] = right[r];
+        for (i = 0; i < dimension; i++)
+            left[i] = right[i];
 
 		/* forward substitution */
 
         int flag = -1;
-        for (r = 0; r < dimension; r++) {
-            double sum = left[permutations[r]];
-            left[permutations[r]] = left[r];
+        for (i = 0; i < dimension; i++) {
+            double sum = left[permutations[i]];
+            left[permutations[i]] = left[i];
             if (flag >= 0)
-                for (c = flag; c < r; c++)
-                    sum -= A[r][c] * left[c];
+                for (c = flag; c < i; c++)
+                    sum -= A[i][c] * left[c];
             else if (sum != 0.0)
-                flag = r;
-            left[r] = sum;
+                flag = i;
+            left[i] = sum;
         }
 
 		/* backward substitution */
 
-        for (r = dimension - 1; r >= 0; r--) {
-            double sum = left[r];
-            for (c = r + 1; c < dimension; c++)
-                sum -= A[r][c] * left[c];
-            left[r] = sum / A[r][r];
+        for (i = dimension - 1; i >= 0; i--) {
+            double sum = left[i];
+            for (c = i + 1; c < dimension; c++)
+                sum -= A[i][c] * left[c];
+            left[i] = sum / A[i][i];
         }
 
 		/* copy result to left vector and building the node table*/
@@ -104,29 +104,29 @@ public class Eqsolver {
         System.out.println("Through Finite Difference Method:");
 
         //Initializing nodes on list and setting parameters for each node
-        for (r = 0; r < dimension; r++) {
-            System.out.print("h" + r + ": " + format1.format(left[r]) + "\t");
+        for (i = 0; i < dimension; i++) {
+            System.out.print("h" + i + ": " + format1.format(left[i]) + "\t");
             nodeList.add(new Node());
-            nodeList.get(r).setN(r + 1);
-            nodeList.get(r).setH(Double.parseDouble(format1.format(left[r])));
-            nodeList.get(r).setX(Double.parseDouble(format1.format(r * x)));
-            nodeList.get(r).setW(Double.parseDouble(format1.format(w0 + wl * r * x)));
+            nodeList.get(i).setN(i + 1);
+            nodeList.get(i).setH(Double.parseDouble(format1.format(left[i])));
+            nodeList.get(i).setX(Double.parseDouble(format1.format(i * x)));
+            nodeList.get(i).setW(Double.parseDouble(format1.format(w0 + wl * i * x)));
 
             //Setting q values on the list
-            if (r != 0 && r != dimension - 1) { //Middle Elements
-                nodeList.get(r).setQ(Double.parseDouble(format1.format((k1 / (2 * x*x)) * (left[r - 1] - 2 * left[r] + left[r + 1]))));
+            if (i != 0 && i != dimension - 1) { //Middle Elements
+                nodeList.get(i).setQ(Double.parseDouble(format1.format((-k / (2 * x)) * (left[i + 1] -  left[i - 1]))));
             } else { //Node 0
-                if (r == 0) {
+                if (i == 0) {
                     if (casenum == 2) { //q0 is given
-                        nodeList.get(r).setQ(Double.parseDouble(format1.format(right[r])));
+                        nodeList.get(i).setQ(Double.parseDouble(format1.format(right[i])));
                     } else { //h0 is given
-                        nodeList.get(r).setQ(Double.parseDouble(format1.format((k1 / x) * (left[r] - left[r + 1]))));
+                        nodeList.get(i).setQ(Double.parseDouble(format1.format((-k / x) * (left[i+1] - left[i]))));
                     }
                 } else { //Node n
                     if (casenum == 3) { //qn is given
-                        nodeList.get(r).setQ(Double.parseDouble(format1.format(right[r])));
+                        nodeList.get(i).setQ(Double.parseDouble(format1.format(right[i])));
                     } else { //hn is given
-                        nodeList.get(r).setQ(Double.parseDouble(format1.format((k1 / x) * (left[r - 2] - left[r - 1]))));
+                        nodeList.get(i).setQ(Double.parseDouble(format1.format((-k / x) * (left[i - 1] - left[i - 2]))));
                     }
                 }
             }

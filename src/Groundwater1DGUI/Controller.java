@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
+
     @FXML
     public Button calculateButton;
     public Button graphButton;
@@ -172,7 +173,7 @@ public class Controller implements Initializable {
             secondaryStage.setScene(new Scene(root1, 600, 600));
             secondaryStage.show();
         } catch (IOException e) {
-            System.out.println("Oh noes! D:" + e);
+            System.out.println("Error" + e);
         }
     }
 
