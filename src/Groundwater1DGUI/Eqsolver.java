@@ -9,7 +9,7 @@ public class Eqsolver {
     public static List<Node> Solve(double[][] A, double[] left, double[] right, double n, double x, double w0, double wl, double k, int casenum) {
 
         int dimension = (int) n;
-        List<Node> nodeList = new ArrayList<Node>();
+        List<Node> nodeList = new ArrayList<>();
         DecimalFormat format1 = new DecimalFormat("0.00");
 
         double[] vector = new double[dimension];

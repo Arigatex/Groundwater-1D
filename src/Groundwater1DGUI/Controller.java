@@ -7,11 +7,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class Controller implements Initializable {
     public ChoiceBox choicel;
     public TableView resultsTable;
     public Label warningLabel;
-    public LineChart chartXY;
+
     TableColumn nodeCol = new TableColumn("Node");
     TableColumn xCol = new TableColumn("x");
     TableColumn wCol = new TableColumn("w");
@@ -54,7 +53,8 @@ public class Controller implements Initializable {
     String choicestrl;
     int casenum;
     List<Node> nodeList;
-    final ObservableList<Node> dataList = FXCollections.observableArrayList();
+    XYChart.Series series1;
+    static XYChart.Series series;
 
     //Initializing the Choicebox options
     @Override
@@ -71,15 +71,12 @@ public class Controller implements Initializable {
         hCol.setStyle("-fx-alignment: CENTER;");
         qCol.setStyle("-fx-alignment: CENTER;");
         nodeCol.setPrefWidth(40);
-
         //Adding columns to the TableView
         resultsTable.getColumns().addAll(nodeCol, xCol, wCol, hCol, qCol);
         resultsTable.setMaxWidth(nodeCol.getWidth() + xCol.getWidth() + wCol.getWidth() + hCol.getWidth() + qCol.getWidth());
-
-
     }
 
-
+    //Detects invalid case, disables buttons and shows warning
     public void choiceDetector() {
         if (choice0.getValue().toString().equalsIgnoreCase("q0") && choicel.getValue().toString().equalsIgnoreCase("ql")) {
             calculateButton.setDisable(true);
@@ -94,7 +91,6 @@ public class Controller implements Initializable {
 
     //Called by clicking on "Calculate" Button
     public void calculate() {
-
         //Reading the input data from TextAreas
         n = Integer.parseInt(textnodes.getText());
         l = Double.parseDouble(textlength.getText());
@@ -108,7 +104,7 @@ public class Controller implements Initializable {
         x = l / (n - 1);
         choicestr0 = choice0.getValue().toString();
         choicestrl = choicel.getValue().toString();
-        nodeList = new ArrayList<Node>();
+        nodeList = new ArrayList<>();
 
 
         //Calling the ChoiceBox / Case identifier
@@ -133,18 +129,13 @@ public class Controller implements Initializable {
         if (casenum != 4) {
             // Creating the Matrix System
             Matrix matrix = new Matrix(n, l, k, h0, hl, q0, ql, w0, wl, casenum);
-
             // Printing the Matrix
             matrix.MatrixPrinter();
-
             // Solving the analytic method
             AnaliticMethod method1 = new AnaliticMethod();
             System.out.println("Through analythic method:\t" + "h(L/2)= " + method1.calculate(l, hl, h0) + "\n");
-
-
             //Receiving the nodeList from Equsolver
             nodeList.addAll(Eqsolver.Solve(matrix.getMatrix(), matrix.getVectorLeft(), matrix.getVectorRight(), n, x, w0, wl, k, casenum));
-
             //Mapping the values of Nodes to columns
             nodeCol.setCellValueFactory(new PropertyValueFactory<Node, String>("N"));
             xCol.setCellValueFactory(new PropertyValueFactory<Node, String>("x"));
@@ -153,24 +144,28 @@ public class Controller implements Initializable {
             qCol.setCellValueFactory(new PropertyValueFactory<Node, String>("q"));
 
             //Creating the ObsList and adding values from nodeList
-            final ObservableList<Node> dataList = FXCollections.observableArrayList();
+            ObservableList<Node> dataList = FXCollections.observableArrayList();
             dataList.addAll(nodeList);
             resultsTable.setItems(dataList);
-            this.dataList.addAll(dataList);
         }
     }
 
-    @FXML
+    //Creates and fills a series for the Chart
     public void openGraph() {
-//        chartXY=new LineChart(Axis<x> x,Axis<y> y);
-//        for (int i = 0; i < n; i++) {
-//            chartXY.setData(dataList);
-//        }
+        //Creating the Chart Series
+        series1 = new XYChart.Series();
+        series1.setName("Head Distribution");
+        series1.setName("Series 1");
+        //Setting the static variable to be read by GraphController
+        series = series1;
+        for (int i = 0; i < n; i++) {
+            series1.getData().add(new XYChart.Data<>(i, nodeList.get(i).getH()));
+        }
         try {
             Parent root1 = FXMLLoader.load(getClass().getResource("Graph.fxml"));
             Stage secondaryStage = new Stage();
             secondaryStage.setTitle("Groundwater 1D");
-            secondaryStage.setScene(new Scene(root1, 600, 600));
+            secondaryStage.setScene(new Scene(root1, 600, 400));
             secondaryStage.show();
         } catch (IOException e) {
             System.out.println("Error" + e);
